@@ -1,26 +1,16 @@
-import pymongo
+from controller.controller_estoque import Controller_Estoque
+from reports.relatorios import Relatorio
 
-# Estabelecer a conexão com o servidor do MongoDB
-client = pymongo.MongoClient("localhost", 27017)  # Mude "localhost" e a porta se o MongoDB estiver em outro lugar
+controller_estoque = Controller_Estoque()
+relatorios = Relatorio()
 
-# Acessar o banco de dados (ou criar um novo)
-db = client['SG_ESTOQUE_PECAS']  # Substitua 'nome_do_banco_de_dados' pelo nome do seu banco de dados
 
-# Acessar uma coleção dentro do banco de dados (ou criar uma nova)
-collection = db['produtos']  # Substitua 'nome_da_colecao' pelo nome da sua coleção
+# Métodos que estão funcionando:
+    # controller_estoque.inserir_estoque()
+    # controller_estoque.excluir_estoque()
+    # controller_estoque.alterar_estoque()
+    # relatorios.get_estoque_produto_em_estoque_especifico()
+    # relatorios.get_estoque_todos_estoques()
+    # relatorios.get_item__todos_itens()
+    # relatorios.get_produto_todos_produtos()
 
-# # Exemplo: Inserir um documento na coleção
-# data = {'chave': 'valor'}  # Seus dados aqui
-# collection.insert_one(data)
-
-# Exemplo: Consultar dados na coleção
-# result = collection.find_one({'chave': 'valor'})  # Consulta um documento com a chave 'valor'
-result = collection.find_one()
-print("result: ", result)
-
-# # Exemplo: Atualizar um documento na coleção
-# update_data = {'$set': {'nova_chave': 'novo_valor'}}
-# collection.update_one({'chave': 'valor'}, update_data)  # Atualiza o documento onde a chave é 'valor'
-
-# Fechar a conexão com o MongoDB (opcional)
-client.close()
