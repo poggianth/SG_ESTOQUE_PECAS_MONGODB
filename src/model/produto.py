@@ -1,6 +1,7 @@
 class Produto:
     def __init__(self, 
                  id:int=None,
+                 codigo:int=None,
                  nome:str=None,
                  descricao:str=None,
                  quantidade:int=None,
@@ -8,7 +9,8 @@ class Produto:
                  preco_unitario:float=None,
                  quantidade_reposicao:int=None
                  ):
-        self.set_id(id)
+        self.set_id(id),
+        self.set_codigo(codigo)
         self.set_descricao(descricao)
         self.set_nome(nome)
         self.set_quantidade(quantidade)
@@ -21,6 +23,12 @@ class Produto:
 
     def set_id(self, id):
         self._id = id
+    
+    def get_codigo(self):
+        return self.codigo
+
+    def set_codigo(self, codigo):
+        self._codigo = codigo
 
     def get_nome(self):
         return self._nome
