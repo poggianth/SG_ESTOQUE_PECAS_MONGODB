@@ -35,13 +35,13 @@ class Controller_Produto:
 
         try:
             self.mongo.db[self.collection_name].insert_one({
+                "codigo": codigo,
                 "nome": nome,
                 "descricao": descricao,
                 "quantidade": quantidade,
                 "categoria": categoria,
                 "preco_unitario": preco_unitario,
-                "quantidade_reposicao": quantidade_reposicao,
-                "codigo": codigo
+                "quantidade_reposicao": quantidade_reposicao
             })
 
             print("\nProduto inserido com sucesso!")
@@ -64,7 +64,7 @@ class Controller_Produto:
         if relatorio.get_produto_todos_produtos():
 
             codigo_produto_alterar = int(
-                input("\nInforme o código(id) do produto que irá ALTERAR: "))
+                input("\nInforme o código do produto que irá ALTERAR: "))
 
             try:
                 self.mongo.connect()
@@ -101,7 +101,7 @@ class Controller_Produto:
                         self.alterar_produto()
 
                 else:
-                    print(f"Não existe nenhum produto com o código(id): {
+                    print(f"Não existe nenhum produto com o código: {
                           codigo_produto_alterar}")
 
             except Exception as error:
@@ -116,7 +116,7 @@ class Controller_Produto:
     def excluir_produto(self):
         if relatorio.get_produto_todos_produtos():
             codigo_produto_excluir = int(
-                input("\nInforme o código(id) do produto que irá EXCLUIR: "))
+                input("\nInforme o código do produto que irá EXCLUIR: "))
 
             try:
                 self.mongo.connect()
@@ -154,7 +154,7 @@ class Controller_Produto:
                     else:
                         print("Opção inválida!")
                 else:
-                    print(f"Não existe nenhum produto com o código(id) = {
+                    print(f"Não existe nenhum produto com o código = {
                           codigo_produto_excluir}")
 
             except Exception as error:

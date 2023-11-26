@@ -18,11 +18,11 @@ try:
 
     # Inserindo registros na coleção 'produtos'
     produtos = [
-        {"codigo": 1, "nome": "Produto 1", "descricao": "Descrição do Produto 1", "quantidade": 10, "categoria": "Categoria 1", "preco_unitario": 100},
-        {"codigo": 2, "nome": "Produto 2", "descricao": "Descrição do Produto 2", "quantidade": 20, "categoria": "Categoria 2", "preco_unitario": 200},
-        {"codigo": 3, "nome": "Produto 3", "descricao": "Descrição do Produto 3", "quantidade": 30, "categoria": "Categoria 3", "preco_unitario": 300},
-        {"codigo": 4, "nome": "Produto 4", "descricao": "Descrição do Produto 4", "quantidade": 40, "categoria": "Categoria 4", "preco_unitario": 400},
-        {"codigo": 5, "nome": "Produto 5", "descricao": "Descrição do Produto 5", "quantidade": 50, "categoria": "Categoria 5", "preco_unitario": 500}
+        {"codigo": 1, "nome": "Produto 1", "descricao": "Descrição do Produto 1", "quantidade": 10, "categoria": "Categoria 1", "preco_unitario": 100, "quantidade_reposicao": 20},
+        {"codigo": 2, "nome": "Produto 2", "descricao": "Descrição do Produto 2", "quantidade": 68, "categoria": "Categoria 2", "preco_unitario": 200, "quantidade_reposicao": 15},
+        {"codigo": 3, "nome": "Produto 3", "descricao": "Descrição do Produto 3", "quantidade": 31, "categoria": "Categoria 3", "preco_unitario": 300, "quantidade_reposicao": 10},
+        {"codigo": 4, "nome": "Produto 4", "descricao": "Descrição do Produto 4", "quantidade": 100, "categoria": "Categoria 4", "preco_unitario": 400, "quantidade_reposicao": 60},
+        {"codigo": 5, "nome": "Produto 5", "descricao": "Descrição do Produto 5", "quantidade": 53, "categoria": "Categoria 5", "preco_unitario": 500, "quantidade_reposicao": 100}
     ]
     db.produtos.insert_many(produtos)
     print("Registros em produtos inseridos com sucesso!")

@@ -27,7 +27,10 @@ class Controller_Estoque:
                 {}, sort=[("codigo", -1)])["codigo"]
             # qtd_estoques = self.mongo.db[self.collection_name].count_documents({})
             self.mongo.db[self.collection_name].insert_one(
-                {"tipo": tipo_estoque, "codigo": ultimo_codigo+1})
+                {
+                    "codigo": ultimo_codigo+1,
+                    "tipo": tipo_estoque
+                })
             print("\nEstoque inserido com sucesso!")
 
             print("""\nDeseja inserir um novo estoque?
@@ -46,7 +49,7 @@ class Controller_Estoque:
     def alterar_estoque(self):
         if relatorio.get_estoque_todos_estoques():
             codigo_estoque_alterar = int(
-                input("\nInforme o código(id) do estoque que irá ALTERAR: "))
+                input("\nInforme o código do estoque que irá ALTERAR: "))
 
             try:
                 self.mongo.connect()
@@ -68,7 +71,7 @@ class Controller_Estoque:
                     if opcao_novamente == 1:
                         self.alterar_estoque()
                 else:
-                    print(f"Não existe nenhum estoque com o código(id) = {
+                    print(f"Não existe nenhum estoque com o código = {
                           codigo_estoque_alterar}")
 
             except Exception as error:
@@ -82,7 +85,7 @@ class Controller_Estoque:
     def excluir_estoque(self):
         if relatorio.get_estoque_todos_estoques():
             codigo_estoque_excluir = int(
-                input("\nInforme o código(id) do estoque que irá EXCLUIR: "))
+                input("\nInforme o código do estoque que irá EXCLUIR: "))
 
             try:
                 self.mongo.connect()
@@ -120,7 +123,7 @@ class Controller_Estoque:
                     else:
                         print("Opção inválida!")
                 else:
-                    print(f"Não existe nenhum estoque com o código(id) = {
+                    print(f"Não existe nenhum estoque com o código = {
                           codigo_estoque_excluir}")
 
             except Exception as error:

@@ -27,12 +27,12 @@ class Controller_Item_Estoque:
 
             if relatorio.get_produto_todos_produtos():
                 codigo_produto = int(
-                    input("Informe o código(id) do produto que deseja armazenar: "))
+                    input("Informe o código do produto que deseja armazenar: "))
 
                 if control_produto.existe_produto(codigo_produto):
                     if relatorio.get_estoque_todos_estoques():
                         codigo_estoque = int(
-                            input("Informe o código(id) do estoque onde irá armazenar: "))
+                            input("Informe o código do estoque onde irá armazenar: "))
                         if control_estoque.existe_estoque(codigo_estoque):
                             estante = input(
                                 "Informe a estante onde o produto ficará: ")
@@ -40,11 +40,11 @@ class Controller_Item_Estoque:
                                 input("Informe o número da prateleira: "))
 
                             self.mongo.db[self.collection_name].insert_one({
+                                "codigo": ultimo_codigo + 1,
                                 "codigo_estoque": codigo_estoque,
                                 "codigo_produto": codigo_produto,
                                 "estante": estante,
-                                "prateleira": prateleira,
-                                "codigo": ultimo_codigo + 1
+                                "prateleira": prateleira
                             })
 
                             print("\nProduto armazenado com sucesso!")
@@ -59,7 +59,7 @@ class Controller_Item_Estoque:
 
                         else:
                             print(
-                                f"[OPS] - Não existe nenhum estoque com o código(id) = {codigo_estoque}")
+                                f"[OPS] - Não existe nenhum estoque com o código = {codigo_estoque}")
                     else:
                         print(
                             "Cadastre pelo menos 1 estoque antes de guardar o produto!")
@@ -77,17 +77,17 @@ class Controller_Item_Estoque:
         # Mostra os itens_armazenados para guiar o usuário
         if relatorio.get_item__todos_itens():
             codigo_item_estoque_alterar = int(
-                input("Informe o código(id) do item_produto que deseja alterar: "))
+                input("Informe o código do item_produto que deseja alterar: "))
 
             try:
                 if self.existe_item_estoque(codigo_item_estoque_alterar):
                     if relatorio.get_produto_todos_produtos():
                         codigo_produto = int(
-                            input("Informe o (NOVO) código(id) do produto que deseja armazenar: "))
+                            input("Informe o (NOVO) código do produto que deseja armazenar: "))
                         if control_produto.existe_produto(codigo_produto):
                             if relatorio.get_estoque_todos_estoques():
                                 codigo_estoque = int(
-                                    input("Informe o (NOVO) código(id) do estoque onde irá armazenar: "))
+                                    input("Informe o (NOVO) código do estoque onde irá armazenar: "))
                                 if control_estoque.existe_estoque(codigo_estoque):
                                     estante = input(
                                         "Informe a (NOVA) estante onde o produto ficará: ")
@@ -115,7 +115,7 @@ class Controller_Item_Estoque:
 
                                 else:
                                     print(
-                                        f"[OPS] - Não existe nenhum estoque com o código(id) = {codigo_estoque}")
+                                        f"[OPS] - Não existe nenhum estoque com o código = {codigo_estoque}")
                             else:
                                 print(
                                     "Cadastre pelo menos 1 estoque antes de guardar o produto!")
@@ -125,7 +125,7 @@ class Controller_Item_Estoque:
                     else:
                         print("Cadastre pelo menos 1 produto antes de guardá-lo!")
                 else:
-                    print(f"Não existe nenhum item_estoque com o código(id) = {
+                    print(f"Não existe nenhum item_estoque com o código = {
                           codigo_item_estoque_alterar}")
 
             except Exception as error:
@@ -140,7 +140,7 @@ class Controller_Item_Estoque:
         # Mostra os itens_armazenados para guiar o usuário
         if relatorio.get_item__todos_itens():
             codigo_item_estoque_excluir = int(
-                input("\nInforme o código(id) do item_estoque que irá EXCLUIR: "))
+                input("\nInforme o código do item_estoque que irá EXCLUIR: "))
 
             try:
                 self.mongo.connect()
