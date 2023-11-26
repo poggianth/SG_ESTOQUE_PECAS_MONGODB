@@ -19,11 +19,6 @@ relatorios = Relatorio()
 # relatorios.get_produto_valor_total()
 # relatorios.get_produto_produtos_reposicao()
 
-relatorios.get_item_localizacao_produto_especifico()
-# relatorios.get_estoque_produto_em_estoque_especifico()
-
-
-
 # Controller estoque
 # controller_estoque.inserir_estoque()
 # controller_estoque.alterar_estoque()

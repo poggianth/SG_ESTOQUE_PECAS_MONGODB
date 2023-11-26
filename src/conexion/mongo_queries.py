@@ -3,14 +3,16 @@ import pymongo
 class MongoQueries:
     def __init__(self):
         # Laboratório:
-        # self.host = "localhost"
-        # self.port = 27017
-        # self.service_name = 'labdatabase'
-
-        # Máquina local
         self.host = "localhost"
         self.port = 27017
-        self.service_name = 'SG_ESTOQUE_PECAS'
+        self.service_name = 'labdatabase'
+        # self.user = 'labdatabase'
+        # self.passwd = 'labDatabase2022'
+
+        # Máquina local
+        # self.host = "localhost"
+        # self.port = 27017
+        # self.service_name = 'SG_ESTOQUE_PECAS'
     
     
     def __del__(self):
