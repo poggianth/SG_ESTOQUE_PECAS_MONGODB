@@ -1,4 +1,3 @@
-from conexion.oracle_queries import OracleQueries
 from conexion.mongo_queries import MongoQueries
 import pandas as pd
 
@@ -32,53 +31,89 @@ class Relatorio:
     
     
     def get_produto_valor_total(self):
-        oracle = OracleQueries()
-        oracle.connect()
-        query_produto_valor_total = """
-            SELECT
-                ID AS Produto_ID,
-                NOME AS Produto_Nome,
-                QUANTIDADE AS Quantidade,
-                PRECO_UNITARIO AS Preco_Unitario,
-                QUANTIDADE * PRECO_UNITARIO AS ValorTotalPorProduto
-            FROM
-                Produto
-            UNION ALL
-            SELECT
-                NULL AS Produto_ID,
-                'Total Geral' AS Produto_Nome,
-                NULL AS Quantidade,
-                NULL AS Preco_Unitario,
-                SUM(QUANTIDADE * PRECO_UNITARIO) AS ValorTotalGeral
-            FROM
-                Produto
-        """
-        
-        print("\n")
+        mongo = MongoQueries()
+        mongo.connect()
+        produtos_collection = mongo.db["produtos"]
 
-        result = oracle.sqlToDataFrame(query_produto_valor_total)
-        if result.empty:
+
+        # Agregação para calcular o valor total por produto e o valor total geral
+        pipeline = [
+            {
+                "$project": {
+                    "Produto_ID": "$_id",
+                    "Produto_Nome": "$nome",
+                    "Quantidade": "$quantidade",
+                    "Preco_Unitario": "$preco_unitario",
+                    "ValorTotalPorProduto": {"$multiply": ["$quantidade", "$preco_unitario"]}
+                }
+            },
+            {
+                "$group": {
+                    "_id": None,
+                    "Produtos": {
+                        "$push": {
+                            "Produto_ID": "$Produto_ID",
+                            "Produto_Nome": "$Produto_Nome",
+                            "Quantidade": "$Quantidade",
+                            "Preco_Unitario": "$Preco_Unitario",
+                            "ValorTotalPorProduto": "$ValorTotalPorProduto"
+                        }
+                    },
+                    "ValorTotalGeral": {"$sum": "$ValorTotalPorProduto"}
+                }
+            },
+            {
+                "$project": {
+                    "_id": 0,
+                    "Produtos": 1,
+                    "Total_Geral": {
+                        "Produto_ID": "-------------",
+                        "Produto_Nome": "Total Geral",
+                        "Quantidade": "-------------",
+                        "Preco_Unitario": "-------------",
+                        "ValorTotalPorProduto": "$ValorTotalGeral"
+                    }
+                }
+            }
+        ]
+
+        result = list(produtos_collection.aggregate(pipeline))
+        
+        if not result:
             print("Não existe nenhum produto cadastrado!")
         else:
-            print(result)
+            # Criando dataframes com os resultados
+            df_produtos = pd.DataFrame(result[0]['Produtos'])
+            df_total_geral = pd.DataFrame([result[0]['Total_Geral']])
 
+            print("Produtos:")
+            print(df_produtos)
+            print("\nTotal Geral:")
+            print(df_total_geral)
+
+        mongo.close()
         input("\nPressione Enter para Sair do Relatório de Produtos ")
 
     
     def get_produto_produtos_reposicao(self):
-        oracle = OracleQueries()
-        oracle.connect()
-        query_produto_reposicao = "SELECT * FROM produto where quantidade <= quantidade_reposicao ORDER BY (id)"
+        mongo = MongoQueries()
+        mongo.connect()
+        produtos_collection = mongo.db["produtos"]
 
-        print("\n")
-        result = oracle.sqlToDataFrame(query_produto_reposicao)
-        
-        if result.empty:
+        # Consulta para encontrar produtos que precisam de reposição
+        query_produto_reposicao = {"$expr": {"$lte": ["$quantidade", "$quantidade_reposicao"]}}
+        result = list(produtos_collection.find(query_produto_reposicao).sort([("id", 1)]))
+
+        if not result:
             print("Nenhum produto precisa de reposição! :)")
         else:
-            print(result)
+            # Criando um DataFrame com os resultados
+            df_produtos_reposicao = pd.DataFrame(result)
+            print(df_produtos_reposicao)
 
+        mongo.close()
         input("\nPressione Enter para Sair do Relatório de Produtos ")
+
     
     
     def get_estoque_todos_estoques(self):
@@ -119,42 +154,21 @@ class Relatorio:
             if df_todos_estoques.empty:
                 print(f"Não existe nenhum estoque com o código: ({codigo_estoque})!")
             else:
-                produto_ids = [item['codigo_produto'] for item in query_result]
                 produtos_em_estoque = mongo.db["itens_estoque"].find({"codigo_estoque": codigo_estoque})
                 df_produtos_em_estoque = pd.DataFrame(produtos_em_estoque)
 
                 if df_produtos_em_estoque.empty:
                     print(f"Não existem produtos armazenados no estoque ({codigo_estoque})")
                 else:
-                    print(f"Produtos armazenados no estoque ${codigo_estoque}: ")
+                    print(f"Produtos armazenados no estoque {codigo_estoque}: ")
                     print(df_produtos_em_estoque)
 
             input("\nPressione Enter para sair do Relatório de Estoque ")
 
         except Exception as error:
             print(f"[OPS] - Erro ao buscar produtos no estoque: {error}")
-    
-        # id_estoque = int(input("Informe o id do estoque: "))
-
-        # oracle = OracleQueries()
-        # oracle.connect()
-        # query_estoque_produto_em_estoque_especifico = f"""
-        #     SELECT p.*
-        #     FROM item_estoque ie
-        #     INNER JOIN produto p
-        #     on ie.id_produto = p.id and ie.id_estoque = {id_estoque}
-        #     ORDER BY (p.id)
-        #     """
-
-        # print("\n")
-        # result = oracle.sqlToDataFrame(query_estoque_produto_em_estoque_especifico)
-
-        # if result.empty:
-        #     print(f"Não existe nenhum produto no estoque ({id_estoque})")
-        # else:
-        #     print(result)
         
-        # input("\nPressione Enter para sair do Relatório de Estoque ")
+        mongo.close()
 
     
     def get_item__todos_itens(self):
@@ -181,26 +195,26 @@ class Relatorio:
 
     
     def get_item_localizacao_produto_especifico(self):
-        id_produto = int(input("Informe o id do produto: "))
+        codigo_produto = int(input("Informe o id do produto: "))
 
-        oracle = OracleQueries()
-        oracle.connect()
-        query_item_localizacao_produto_especifico = f"""
-            SELECT distinct p.id, p.nome, p.descricao, i.estante, i.prateleira
-            FROM produto p
-            INNER JOIN item_estoque i
-                on i.id_produto = p.id
-            where i.id_produto = {id_produto}
-            """
+        try:
+            mongo = MongoQueries()
+            mongo.connect()
 
-        print("\n")
+            result = mongo.db["itens_estoque"].find({
+                "codigo_produto": codigo_produto
+            })
 
-        result = oracle.sqlToDataFrame(query_item_localizacao_produto_especifico)
+            df_localizacao_produto = pd.DataFrame(result)
 
-        if result.empty:
-            print(f"O produto({id_produto}) não está em nenhum estoque!")
-        else:
-            print(result)
-        
-            
+
+            if df_localizacao_produto.empty:
+                print(f"O produto ({codigo_produto}) não está armazenado em nenhum estoque ou não existe!")
+            else:
+                # Criando um DataFrame com os resultados
+                print(df_localizacao_produto)
+        except Exception as error:
+            print(f"Erro ao buscar localização de um produto: {error}")
+
+        mongo.close()
         input("\nPressione Enter para sair do Relatório de Itens ")

@@ -50,10 +50,8 @@ class Controller_Estoque:
 
             try:
                 self.mongo.connect()
-                estoque_existente = self.mongo.db[self.collection_name].find_one(
-                    {"codigo": codigo_estoque_alterar})
 
-                if estoque_existente != None:
+                if self.existe_estoque(codigo_estoque_alterar):
                     tipo_estoque_novo = input("Informe o (NOVO) tipo: ")
 
                     # Atualiza o tipo do estoque

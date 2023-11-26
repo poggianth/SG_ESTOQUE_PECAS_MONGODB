@@ -68,11 +68,7 @@ class Controller_Produto:
 
             try:
                 self.mongo.connect()
-                produto_existente = self.mongo.db[self.collection_name].find_one({
-                    "codigo": codigo_produto_alterar
-                })
-
-                if produto_existente != None:
+                if self.existe_produto(codigo_produto_alterar):
                     # Produto existe
                     nome = input("Informe o (NOVO) nome: ")
                     descricao = input("Informe a (NOVA) descrição: ")
@@ -116,53 +112,6 @@ class Controller_Produto:
                 "Não existe nenhum produto cadastrado para ALTERAR! Cadastre pelo menos 1")
 
         self.mongo.close()
-
-    # def excluir_produto(self):
-        # Mostra os produtos cadastrados para guiar o usuário
-        if relatorio.get_produto_todos_produtos():
-
-            id_produto_excluir = int(
-                input("\nInforme o código(id) do produto que irá EXCLUIR: "))
-
-            try:
-                oracle = OracleQueries(can_write=True)
-                oracle.connect()
-
-                if self.existe_produto(oracle, id_produto_excluir):
-                    print("""\nTem certeza que deseja excluir o produto selecionado?
-                    [1] - Sim
-                    [0] - Não""")
-                    opcao_certeza = int(input("Informe sua opção: "))
-
-                    if opcao_certeza == 1:
-                        if self.existe_itens_dependentes(oracle, id_produto_excluir):
-                            self.excluir_itens_dependentes(
-                                oracle, id_produto_excluir)
-
-                            oracle.write(f"DELETE FROM produto WHERE id = {
-                                         id_produto_excluir}")
-
-                            oracle.conn.commit()
-                            print(
-                                f"Produto({id_produto_excluir}) excluído com sucesso!")
-                        else:
-                            oracle.write(f"DELETE FROM produto WHERE id = {
-                                         id_produto_excluir}")
-
-                            print(
-                                f"Produto({id_produto_excluir}) excluído com sucesso!")
-                    else:
-                        print("Operação de exclusão cancelada com sucesso!")
-                else:
-                    print(f"Não existe nenhum produto com o código(id): {
-                          id_produto_excluir}")
-
-            except Exception as error:
-                print(f"[OPS] - Erro ao excluir produto: {error}")
-
-        else:
-            print(
-                "Não existe nenhum produto cadastrado para EXCLUIR! Cadastre pelo menos 1")
 
     def excluir_produto(self):
         if relatorio.get_produto_todos_produtos():
@@ -215,20 +164,3 @@ class Controller_Produto:
             print(
                 "Não existe nenhum produto cadastrado para EXCLUIR! Cadastre pelo menos 1")
         self.mongo.close()
-
-    # def existe_itens_dependentes(self, id_produto: int):
-    #     result = oracle.sqlToDataFrame(
-    #         f"SELECT id FROM item_estoque WHERE id_produto={id_produto}")
-
-    #     return not result.empty
-
-    # def excluir_itens_dependentes(self, id_produto: int):
-    #     try:
-    #         oracle.write(
-    #             f"DELETE FROM item_estoque WHERE id_produto = {id_produto}")
-    #         print(f"Itens dependentes do produto ({
-    #               id_produto}) deletados com sucesso!")
-
-    #     except Exception as error:
-    #         print(
-    #             f"[OPS] - Erro ao deletar itens dependentes do produto({id_produto}): {error}")
