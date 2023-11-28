@@ -14,30 +14,24 @@ class Controller_Item_Estoque:
 
     def existe_item_estoque(self, codigo_item_estoque: int):
         self.mongo.connect()
-        result = self.mongo.db[self.collection_name].find_one(
-            {"codigo": codigo_item_estoque})
+        result = self.mongo.db[self.collection_name].find_one({"codigo": codigo_item_estoque})
 
         return not result == None
 
     def inserir_item_estoque(self):
         try:
             self.mongo.connect()
-            ultimo_codigo = self.mongo.db[self.collection_name].find_one(
-                {}, sort=[("codigo", -1)])["codigo"]
+            ultimo_codigo = self.mongo.db[self.collection_name].find_one({}, sort=[("codigo", -1)])["codigo"]
 
             if relatorio.get_produto_todos_produtos():
-                codigo_produto = int(
-                    input("Informe o código do produto que deseja armazenar: "))
+                codigo_produto = int(input("Informe o código do produto que deseja armazenar: "))
 
                 if control_produto.existe_produto(codigo_produto):
                     if relatorio.get_estoque_todos_estoques():
-                        codigo_estoque = int(
-                            input("Informe o código do estoque onde irá armazenar: "))
+                        codigo_estoque = int(input("Informe o código do estoque onde irá armazenar: "))
                         if control_estoque.existe_estoque(codigo_estoque):
-                            estante = input(
-                                "Informe a estante onde o produto ficará: ")
-                            prateleira = int(
-                                input("Informe o número da prateleira: "))
+                            estante = input("Informe a estante onde o produto ficará: ")
+                            prateleira = int(input("Informe o número da prateleira: "))
 
                             self.mongo.db[self.collection_name].insert_one({
                                 "codigo": ultimo_codigo + 1,
@@ -58,14 +52,11 @@ class Controller_Item_Estoque:
                                 self.inserir_item_estoque()
 
                         else:
-                            print(
-                                f"[OPS] - Não existe nenhum estoque com o código = {codigo_estoque}")
+                            print(f"[OPS] - Não existe nenhum estoque com o código = {codigo_estoque}")
                     else:
-                        print(
-                            "Cadastre pelo menos 1 estoque antes de guardar o produto!")
+                        print("Cadastre pelo menos 1 estoque antes de guardar o produto!")
                 else:
-                    print(
-                        f"[OPS] - Não existe nenhum produto com o código = {codigo_produto}")
+                    print(f"[OPS] - Não existe nenhum produto com o código = {codigo_produto}")
             else:
                 print("Cadastre pelo menos 1 produto antes de guardá-lo!")
         except Exception as error:
@@ -76,23 +67,18 @@ class Controller_Item_Estoque:
     def alterar_item_estoque(self):
         # Mostra os itens_armazenados para guiar o usuário
         if relatorio.get_item__todos_itens():
-            codigo_item_estoque_alterar = int(
-                input("Informe o código do item_produto que deseja alterar: "))
+            codigo_item_estoque_alterar = int(input("Informe o código do item_produto que deseja alterar: "))
 
             try:
                 if self.existe_item_estoque(codigo_item_estoque_alterar):
                     if relatorio.get_produto_todos_produtos():
-                        codigo_produto = int(
-                            input("Informe o (NOVO) código do produto que deseja armazenar: "))
+                        codigo_produto = int(input("Informe o (NOVO) código do produto que deseja armazenar: "))
                         if control_produto.existe_produto(codigo_produto):
                             if relatorio.get_estoque_todos_estoques():
-                                codigo_estoque = int(
-                                    input("Informe o (NOVO) código do estoque onde irá armazenar: "))
+                                codigo_estoque = int(input("Informe o (NOVO) código do estoque onde irá armazenar: "))
                                 if control_estoque.existe_estoque(codigo_estoque):
-                                    estante = input(
-                                        "Informe a (NOVA) estante onde o produto ficará: ")
-                                    prateleira = int(
-                                        input("Informe o (NOVO) número da prateleira: "))
+                                    estante = input("Informe a (NOVA) estante onde o produto ficará: ")
+                                    prateleira = int(input("Informe o (NOVO) número da prateleira: "))
 
                                     self.mongo.db[self.collection_name].update_one({"codigo": codigo_item_estoque_alterar}, {"$set": {
                                         "codigo_estoque": codigo_estoque,
@@ -101,14 +87,12 @@ class Controller_Item_Estoque:
                                         "prateleira": prateleira
                                     }})
 
-                                    print(
-                                        "\nLocalização do produto alterada com sucesso!")
+                                    print("\nLocalização do produto alterada com sucesso!")
 
                                     print("""\nDeseja alterar a localização de mais um produto?
                                     [1] - Sim
                                     [0] - Não""")
-                                    opcao_novamente = int(
-                                        input("Informe sua opção: "))
+                                    opcao_novamente = int(input("Informe sua opção: "))
 
                                     if opcao_novamente == 1:
                                         self.alterar_item_estoque()
@@ -125,22 +109,19 @@ class Controller_Item_Estoque:
                     else:
                         print("Cadastre pelo menos 1 produto antes de guardá-lo!")
                 else:
-                    print(f"Não existe nenhum item_estoque com o código = {
-                          codigo_item_estoque_alterar}")
+                    print(f"Não existe nenhum item_estoque com o código = {codigo_item_estoque_alterar}")
 
             except Exception as error:
                 print(f"[OPS] - Erro ao editar item_estoque: {error}")
 
         else:
-            print(
-                "Não existe nenhum produto armazenado para ALTERAR! Armazene pelo menos 1")
+            print("Não existe nenhum produto armazenado para ALTERAR! Armazene pelo menos 1")
         self.mongo.close()
 
     def excluir_item_estoque(self):
         # Mostra os itens_armazenados para guiar o usuário
         if relatorio.get_item__todos_itens():
-            codigo_item_estoque_excluir = int(
-                input("\nInforme o código do item_estoque que irá EXCLUIR: "))
+            codigo_item_estoque_excluir = int(input("\nInforme o código do item_estoque que irá EXCLUIR: "))
 
             try:
                 self.mongo.connect()
@@ -152,21 +133,17 @@ class Controller_Item_Estoque:
                     opcao_certeza = int(input("Informe sua opção: "))
 
                     if opcao_certeza == 1:
-                        self.mongo.db[self.collection_name].delete_one(
-                            {"codigo": codigo_item_estoque_excluir})
+                        self.mongo.db[self.collection_name].delete_one({"codigo": codigo_item_estoque_excluir})
 
-                        print(
-                            f"Item_estoque({codigo_item_estoque_excluir}) excluído com sucesso!")
+                        print(f"Item_estoque({codigo_item_estoque_excluir}) excluído com sucesso!")
                     else:
                         print("Operação de exclusão cancelada com sucesso!")
                 else:
-                    print(f"Não existe nenhum item_estoque com o código = {
-                          codigo_item_estoque_excluir}")
+                    print(f"Não existe nenhum item_estoque com o código = {codigo_item_estoque_excluir}")
             except Exception as error:
                 print(f"[OPS] - Erro ao excluir item_estoque: {error}")
 
         else:
-            print(
-                "Não existe nenhum produto armazenado para ALTERAR! Armazene pelo menos 1")
+            print("Não existe nenhum produto armazenado para ALTERAR! Armazene pelo menos 1")
 
         self.mongo.close()
